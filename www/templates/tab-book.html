@@ -1,0 +1,18 @@
+<ion-view title="{{book.title}}" id='bookView' >
+    <ion-nav-buttons side="left">
+
+    </ion-nav-buttons>
+
+      <ion-nav-buttons side="right">
+        <button class="button button-icon button-clear button-right icon "
+          ng-class="{'ion-ios7-star-outline': favorite == 0,'ion-ios7-star-half':favorite == 2,'ion-ios7-star': favorite == 1}" ng-click="toggleFavorite()">
+        </button>
+        <button class="button button-icon button-clear button-right icon ion-ios7-home-outline " ng-click="goHome()">
+        </button>
+    </ion-nav-buttons>
+
+  <ion-content class="padding" delegate-handle='bookScroll'>
+    <div class='book-content yue' id='top2' compile='book.text'>
+    </div>
+  </ion-content>
+</ion-view>

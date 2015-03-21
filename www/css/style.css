@@ -1,0 +1,26 @@
+/* Empty. Add your own CSS if you like */
+.center{
+  text-align:center;
+}
+
+h1 {
+  text-align:center;
+
+}
+
+i {
+  text-style: italic;
+}
+
+a.new:link {
+  text-decoration: none;
+}
+a.new:visited {
+    text-decoration: none;
+}
+
+
+.txt {
+  font: 400 20px/1.62 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
+  color: #444443;
+}

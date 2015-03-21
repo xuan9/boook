@@ -1,0 +1,44 @@
+<ion-view title="藏书">
+    <ion-nav-buttons side="right">
+      <button class="button button-icon button-clear button-right"
+         ng-click="showLibrary()">选择
+      </button>
+  </ion-nav-buttons>
+
+  <ion-content class="padding">
+    <ion-list>
+      <ion-item class = 'item' style='border:none' ng-repeat="item in favorites" ui-sref="tab.book({name:item.name})">
+          {{item.name}}
+           <!-- <ion-option-button class="ion-minus-circled"
+                       ng-click="delete(item)">
+                        Delete
+          </ion-option-button> -->
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
+
+
+<script id="model-library.html" type="text/ng-template">
+<ion-modal-view>
+    <ion-header-bar class='bar bar-header'>
+      <h1 class="title">收藏</h1>
+    </ion-header-bar>
+  <ion-content class="padding">
+    <ion-list>
+      <ion-item class = 'item item-icon-right' style='border:none' ng-repeat="item in libraryBooks">
+        <a ui-sref="tab.book({name:item})">{{item}}</a>
+        <i ng-if='!isFav(item)' class="icon ion-ios7-star-outline"  ng-click="toggleFavorite(item,false)"></i>
+        <i ng-if='isFav(item)' class="icon ion-ios7-star"  ng-click="toggleFavorite(item,true)"></i>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-item class = 'item item-icon-right' style='border:none' ng-repeat="item in favorites | filter:isNotLib:false">
+        <a ui-sref="tab.book({name:item.name})">{{item.name}}</a>
+        <i class="icon ion-ios7-star"  ng-click="toggleFavorite(item.name,true)"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+</ion-modal-view>
+</script>
