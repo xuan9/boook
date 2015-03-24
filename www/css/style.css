@@ -21,6 +21,20 @@ a.new:visited {
 
 
 .txt {
-  font: 400 20px/1.62 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
-  color: #444443;
+  font: 600 20px/1.71 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
+  /*color: #444443;*/
+  /*background-color:white;*/
+  padding:0 1px 0 5px;
+}
+
+*:not(font) {
+  background-color:black!important;
+  color:white!important;
+}
+.toggle input:checked + .track {
+  border-color: #4a87ee!important;
+  background-color: #4a87ee!important;
+}
+.toggle .handle {
+  background-color: #fff!important;
 }

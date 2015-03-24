@@ -3,7 +3,7 @@
   Each tab's child <ion-nav-view> directive will have its own
   navigation history that also transitions its views in and out.
 -->
-<ion-tabs class="tabs-icon-top tabs-item-hide" id='tabs' ng-model="hideTabs">
+<ion-tabs class="tabs-icon-bottom tabs-item-show" id='tabs'>
 
 
   <!-- Dashboard Tab -->
@@ -11,13 +11,19 @@
     <ion-nav-view name="tab-dash"></ion-nav-view>
   </ion-tab>
 
-
   <!-- Book Tab -->
   <ion-tab title="阅读" icon="icon ion-gear-b" href="#/tab/book/論語">
     <ion-nav-view name="tab-book"></ion-nav-view>
   </ion-tab>
 
+  <!-- Settings Tab -->
+  <ion-tab title="设置" icon="icon ion-gear-b" href="#/tab/settings">
+    <ion-nav-view name="tab-settings"></ion-nav-view>
+  </ion-tab>
+
 </ion-tabs>
+
+
 
 <script id="model-confirm-removal-favorite.html" type="text/ng-template">
 <ion-modal-view>
