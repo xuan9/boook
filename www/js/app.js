@@ -47,7 +47,8 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers',
 
 })
 
-.config(function($stateProvider, $urlRouterProvider, $uiViewScrollProvider) {
+.config(function($stateProvider, $urlRouterProvider, $uiViewScrollProvider,
+    $ionicConfigProvider) {
 
     // Ionic uses AngularUI Router which uses the concept of states
     // Learn more here: https://github.com/angular-ui/ui-router
@@ -116,7 +117,9 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers',
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/tab/dash');
     $uiViewScrollProvider.useAnchorScroll();
-
+    // console.info(JSON.stringify($ionicConfig, null, 4));
+    // $ionicConfig.views.maxCache(20);
+    // $ionicConfig.views.forwardCache(true);
   })
   // .run(function($ionicPlatform, $rootScope, $location, $anchorScroll, $stateParams) {
   // $ionicPlatform.ready(function() {
