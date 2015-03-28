@@ -195,15 +195,7 @@ angular.module('starter.controllers', [])
   Utils.hideTabs(false);
 
   $ionicPlatform.ready(function() { //load settings from db
-    Settings.get("nightMode").then(function(value) {
-      console.info("settings.nightMode=" + value);
-      $rootScope.nightMode = value == "true" ? true : false;
-    });
-    Settings.get("traditionalChinese").then(function(value) {
-      console.info("settings.traditionalChinese=" + value);
-      $rootScope.traditionalChinese = value == "true" ? true :
-        false;
-    });
+  
   });
 
   //toggle handlers
