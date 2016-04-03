@@ -10,6 +10,7 @@ h1 {
 
 i {
   text-style: italic;
+  color:blue;
 }
 
 a.new:link {
@@ -21,8 +22,50 @@ a.new:visited {
 }
 
 .txt {
-  font: 600 20px/1.71 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
+  font: 200 24px/1.71 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
   color:black;
   background-color:white;
   padding:0 1px 0 5px;
 }
+.txtFont{
+  font: 200 24px/1.71 "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", "Noto Sans CJK TC","Noto Sans CJK SC", sans-serif;
+}
+.item{
+  color:blue;
+  padding:1em;
+  font-weight:bold;
+}
+
+.book-item > .item-content{
+  padding:0;
+  margin:0;
+}
+.book-item-name{
+  padding:5px;
+  margin:0;
+}
+.lastReadText{
+  font-weight:normal;
+  padding:0 5px 0 5px;
+  margin:0;
+  white-space:pre-wrap;
+  background-color:green;
+  color:darkblue;
+  /*background-color:lightgreen;*/
+}
+/*.lib-item{
+  padding:10px;
+}*/
+.button{
+  color:blue;
+}
+#settingsView span{
+  padding-right:20px;
+}
+/*.range input{
+  width:67%;
+  display:inline-block;
+}
+.range input{
+  max-width:32%;
+}*/

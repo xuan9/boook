@@ -93,7 +93,7 @@ angular.module('starter.services', ['ngResource'])
       prepare: function() {
         // var createTables = "DROP TABLE favorite";
         var createTables =
-          "CREATE TABLE IF NOT EXISTS favorite (_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR UNIQUE, categoryId INTEGER DEFAULT 0,  isFav INTEGER NOT NULL DEFAULT 1, lastUpdateTime INTEGER DEFAULT CURRENT_TIMESTAMP)"
+          "CREATE TABLE IF NOT EXISTS favorite (_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR UNIQUE, categoryId INTEGER DEFAULT 0,  isFav INTEGER NOT NULL DEFAULT 1, lastUpdateTime INTEGER DEFAULT CURRENT_TIMESTAMP, last_read_chapter VARCHAR, last_read_text VARCHAR, last_read_scrolling VARCHAR)"
         $cordovaSQLite.execute(this.getDb(), createTables).then(function(
           res) {
           console.log("prepared tb favorite, rowsAffected: " + res.rowsAffected);
@@ -213,6 +213,55 @@ angular.module('starter.services', ['ngResource'])
 
         return q.promise;
       },
+      saveReadPosition: function(name, text, scrolling) {
+        //  categoryId INTEGER DEFAULT 0,  isFav INTEGER NOT NULL DEFAULT 1, lastUpdateTime INTEGER DEFAULT CURRENT_TIMESTAMP, last_read_chapter VARCHAR, last_read_text VARCHAR)"
+        var q = $q.defer();
+        var parentName = Utils.parentName(name);
+        if (!parentName) {
+          return;
+        }
+        if (text.length > 200) text = text.substring(0, 200) + "..."; //limit last read size to 200;
+        name = name.substring(parentName.length);
+        var recover =
+          "UPDATE favorite SET last_read_chapter = ?, last_read_text = ?, last_read_scrolling = ?, lastUpdateTime = ? WHERE name = ?";
+        $cordovaSQLite.execute(db, recover, [name, text, scrolling, new Date().getTime(),
+            parentName
+          ])
+          .then(function(res) {
+            console.log("saveReadPosition for favorite " + parentName + ", set last_read_chapter: " + name +
+              ", last_read_text: " + text + ", rowsAffected: " +
+              res.rowsAffected);
+            q.resolve();
+          }, function(err) {
+            console.error("fail to saveReadPosition for favorite: " + err.code +
+              ": " + err.message);
+            q.reject(err);
+
+          });
+        return q.promise;
+      },
+      getLastReadPostion: function(name) {
+        var q = $q.defer();
+        var parentName = Utils.parentName(name);
+        if (!parentName) {
+          q.resolve(null);
+          return q.promise;
+        }
+        name = name.substring(parentName.length);
+
+        var query = "SELECT last_read_scrolling FROM favorite where name = ? and last_read_chapter = ? ";
+        $cordovaSQLite.execute(db, query, [parentName, name]).then(function(res) {
+          console.log("getLastReadPostion " + parentName +
+            name + ", found: " +
+            res.rows.length);
+          q.resolve(res.rows.length > 0 ? res.rows.item(0).last_read_scrolling : null);
+        }, function(err) {
+          console.error("fail to get last read position: " + err.code + ": " +
+            err.message);
+          q.reject(err);
+        });
+        return q.promise;
+      },
       list: function() {
         var q = $q.defer();
         var query =
@@ -327,8 +376,8 @@ angular.module('starter.services', ['ngResource'])
       listFavorites: function() {
         var q = $q.defer();
         var query =
-          "SELECT c._id as catId, c.name as catName, c.parentCategoryId as parentCatId, f.name as name, f._id as favId, f.isFav as isFav FROM category as c left join favorite as f on c._id = f.categoryId where f.isFav = 1 order by c.parentCategoryId, c.name,f.name";
-        $cordovaSQLite.execute(db, query).then(function(res) {
+          "SELECT c._id as catId, c.name as catName, c.parentCategoryId as parentCatId, f.name as name, f._id as favId, f.isFav as isFav, f.last_read_chapter as lastReadChapter, f.last_read_text as lastReadText FROM category as c left join favorite as f on c._id = f.categoryId where f.isFav = 1 order by f.lastUpdateTime desc, c.parentCategoryId, c.name,f.name";
+        $cordovaSQLite.execute(DB.getDb(), query).then(function(res) {
           console.log("listFavorites with categories: " + res.rows.length);
           var list = [];
           for (var i = 0; i < res.rows.length; i++) {
@@ -340,7 +389,9 @@ angular.module('starter.services', ['ngResource'])
               parentCatId: item.parentCatId,
               name: item.name,
               favId: item.favId,
-              isFav: item.isFav
+              isFav: item.isFav,
+              lastReadChapter: item.lastReadChapter,
+              lastReadText: item.lastReadText
             };
             console.log(list[i]);
           }
@@ -364,6 +415,76 @@ angular.module('starter.services', ['ngResource'])
       }
 
     };
+  }).factory('History', function($q, $window, $cordovaSQLite, $rootScope, DB) {
+    var db;
+
+    var history = {
+      getDb: function() {
+        if (db) return db;
+        else db = DB.getDb();
+        return db;
+      },
+      clean: function() {
+        var dropTable = "DROP TABLE history";
+        $cordovaSQLite.execute(this.getDb(), dropTable).then(function(res) {
+          console.log("drop tb history, rowsAffected: " + res.rowsAffected);
+        }, function(err) {
+          console.error("fail drop tb history: " + err.code + ": " +
+            err.message);
+        });
+      },
+      prepare: function() {
+        var createTables =
+          "CREATE TABLE IF NOT EXISTS history (_id INTEGER PRIMARY KEY AUTOINCREMENT, _name VARCHAR UNIQUE, _value VARCHAR DEFAULT '');"
+        $cordovaSQLite.execute(this.getDb(), createTables).then(function(
+          res) {
+          console.log("prepared tb category, rowsAffected: " + res.rowsAffected);
+          history.get("nightMode").then(function(value) {
+            console.info("settings.nightMode=" + value);
+            $rootScope.nightMode = value == "true" ? true : false;
+          });
+          history.get("traditionalChinese").then(function(value) {
+            console.info("settings.traditionalChinese=" + value);
+            $rootScope.traditionalChinese = value == "true" ?
+              true :
+              false;
+          });
+          history.get("fontSize").then(function(value) {
+            console.info("fontSize=" + value);
+            $rootScope.fontSize = value ? value: 24;
+          });
+        }, function(err) {
+          console.error("fail to prepare tb  categories: " + err.code +
+            ": " +
+            err.message);
+        });
+      },
+      save: function(name, value) {
+        var replace = "replace into history(_name,_value) VALUES (?,?)";
+        $cordovaSQLite.execute(db, replace, [name, value]).then(
+          function(res) {
+            console.log("saved history, rowsAffected: " + res.rowsAffected);
+          },
+          function(err) {
+            console.error("fail to save history: " + err.code + ": " +
+              err.message);
+          });
+      },
+      get: function(name) {
+        var q = $q.defer();
+        var query = "SELECT _value FROM history where _name = ? ";
+        $cordovaSQLite.execute(db, query, [name]).then(function(res) {
+          console.log("get history: " + res);
+          q.resolve(res.rows.length == 0 ? null : res.rows.item(0)._value);
+        }, function(err) {
+          console.error("fail to get history: " + err.code + ": " +
+            err.message);
+          q.reject(err);
+        });
+        return q.promise;
+      }
+    };
+    return history;
   })
   .factory('Settings', function($q, $window, $cordovaSQLite, $rootScope, DB) {
     var db;
@@ -399,6 +520,18 @@ angular.module('starter.services', ['ngResource'])
               true :
               false;
           });
+          Settings.get("fontSize").then(function(value) {
+            console.info("fontSize=" + value);
+            $rootScope.fontSize = value ? value: 24;
+          });
+          Settings.get("fontWeight").then(function(value) {
+            console.info("fontWeight=" + value);
+            $rootScope.fontWeight = value ? value: "normal";
+          });
+          Settings.get("brightness").then(function(value) {
+            console.info("brightness=" + value);
+            $rootScope.fontbrightnessSize = value ? value: 60;
+          });
         }, function(err) {
           console.error("fail to prepare tb  categories: " + err.code +
             ": " +
@@ -431,6 +564,9 @@ angular.module('starter.services', ['ngResource'])
       }
     };
     return Settings;
+  })
+  .factory('LastRead', function($q, $window, $cordovaSQLite, $rootScope, DB, Settings) {
+
   })
   .factory('Files', function($ionicPlatform, $cordovaFile, $q, ShortHash) {
     var dir = 'boook/';
@@ -601,9 +737,9 @@ angular.module('starter.services', ['ngResource'])
   }])
 
 /**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* Anchor Smooth Scroll - Smooth scroll to the given anchor on click
-*   adapted from this stackoverflow answer: http://stackoverflow.com/a/21918502/257494
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+		* Anchor Smooth Scroll - Smooth scroll to the given anchor on click
+		*   adapted from this stackoverflow answer: http://stackoverflow.com/a/21918502/257494
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 //angular.module('yourapp')
 .directive('anchor', function($location, $ionicScrollDelegate, $timeout) {
     'use strict';
@@ -841,8 +977,7 @@ angular.module('starter.services', ['ngResource'])
       var sign = integer < 0 ? '-' : '';
 
       function table(num) {
-        var t =
-          '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var t = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return t[num];
       }
 

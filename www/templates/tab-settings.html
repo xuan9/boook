@@ -1,16 +1,27 @@
 <ion-view title="設置" id='settingsView' >
-    <ion-content class="">
+    <ion-content >
+      <form>
        <ion-toggle ng-model="nightMode"  ng-change="nightModeChanged()">
-         夜間模式
+         <span>夜間模式</span>
       </ion-toggle>
       <ion-toggle ng-model="traditionalChinese"  ng-change="traditionalChineseChanged()">
-        正體文字
+        <span>正體文字</span>
      </ion-toggle>
-        <!-- <ion-list>
-          <ion-item class = 'item' style='border:none' ng-repeat="item in favorites" ui-sref="tab.book({name:item.name})">
-
-          </ion-item>
-        </ion-list> -->
-      </ion-content>
+     <div class="item range" id="fontSizeDiv" >
+       <span  class='txtFont' style="{{fontSize?'font-size:'+fontSize+'px;':''}} {{fontWeight?'font-weight:'+fontWeight+';':''}}">文字大小</span>
+       <input type="range" min='10' step='1' max='40' name='fontSize' ng-model="fontSize" ng-change="fontSizeChanged({{fontSize}})">
+     </div>
+     <div class="item range" id='fontWeightDiv'>
+       <span class='txtFont' style="{{fontSize?'font-size:'+fontSize+'px;':''}} {{fontWeight?'font-weight:'+fontWeight+';':''}}">文字粗細</span>
+       <input type="range" step='100' min='200' max='900' name="fontWeight" ng-model="fontWeight" ng-change="fontWeightChanged({{fontWeight}})">
+     </div>
+     <!-- <div class="item range range-positive">
+      <span>屏幕亮度</span>
+       <i class="icon ion-ios-sunny-outline"></i>
+       <input type="range" name="brightness" ng-model="brightness" step='1' min="0" max="100" ng-change="brightnessChanged({{brightness}})">
+       <i class="icon ion-ios-sunny"></i>
+     </div> -->
+   </form>
+  </ion-content>
 
 </ion-view>

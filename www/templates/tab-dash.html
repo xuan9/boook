@@ -7,8 +7,14 @@
 
   <ion-content class="padding">
     <ion-list>
-      <ion-item class = 'item' style='border:none' ng-repeat="item in favorites" ui-sref="tab.book({name:item.name})">
-          {{item.name}}
+      <ion-item class = 'item book-item' style='border:none;' ng-repeat="item in favorites">
+          <div class='book-item-name'  ui-sref="tab.book({name:item.name})">
+            {{item.name}}
+          </div>
+          <div class='lastReadText' ng-if="item.lastReadText" ui-sref="tab.book({name:(item.lastReadChapter?item.name+item.lastReadChapter:item.name), continue: true})">
+            {{item.lastReadText}}
+            <span style='float:right;padding-top:5px'>——{{item.lastReadChapter.substring(1)}}</span>
+          </div>
            <!-- <ion-option-button class="ion-minus-circled"
                        ng-click="delete(item)">
                         Delete
@@ -26,14 +32,14 @@
     </ion-header-bar>
   <ion-content class="padding">
     <ion-list>
-      <ion-item class = 'item item-icon-right' style='border:none' ng-repeat="item in libraryBooks">
+      <ion-item class = 'item item-icon-right lib-item' style='border:none' ng-repeat="item in libraryBooks">
         <a ui-sref="tab.book({name:item})">{{item}}</a>
         <i ng-if='!isFav(item)' class="icon ion-ios7-star-outline"  ng-click="toggleFavorite(item,false)"></i>
         <i ng-if='isFav(item)' class="icon ion-ios7-star"  ng-click="toggleFavorite(item,true)"></i>
       </ion-item>
     </ion-list>
     <ion-list>
-      <ion-item class = 'item item-icon-right' style='border:none' ng-repeat="item in favorites | filter:isNotLib:false">
+      <ion-item class = 'item item-icon-right lib-item' style='border:none' ng-repeat="item in favorites | filter:isNotLib:false">
         <a ui-sref="tab.book({name:item.name})">{{item.name}}</a>
         <i class="icon ion-ios7-star"  ng-click="toggleFavorite(item.name,true)"></i>
       </ion-item>
